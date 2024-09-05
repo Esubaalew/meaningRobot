@@ -188,7 +188,7 @@ def main() -> None:
     application.add_handler(CommandHandler("list", list_bots))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, search))
     application.add_handler(MessageHandler(filters.PHOTO, filter_photos))
-    application.add_handler(MessageHandler(filters.DOCUMENT, filter_documents))
+    #application.add_handler(MessageHandler(filters.DOCUMENT, filter_documents))
     application.add_handler(MessageHandler(filters.VIDEO, filter_videos))
     application.add_handler(MessageHandler(filters.VOICE, filter_voice))
     application.add_handler(MessageHandler(filters.AUDIO, filter_audio))
