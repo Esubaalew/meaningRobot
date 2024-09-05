@@ -135,14 +135,18 @@ def main() -> None:
 
     # Detecting Text (non-command) and URLs
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, filter_text))
-    application.add_handler(MessageHandler(filters.Entity.url, filter_url))
+
+    from telegram import MessageEntity
+
+    # Corrected URL filter
+    application.add_handler(MessageHandler(filters.TEXT & filters.Entity(MessageEntity.URL), filter_url))
 
     # Detecting Media
     application.add_handler(MessageHandler(filters.PHOTO, filter_photo))
-    application.add_handler(MessageHandler(filters.Document.All, filter_document))
+    application.add_handler(MessageHandler(filters.Document.ALL, filter_document))
     application.add_handler(MessageHandler(filters.AUDIO, filter_audio))
     application.add_handler(MessageHandler(filters.VIDEO, filter_video))
-    application.add_handler(MessageHandler(filters.STICKER, filter_sticker))
+    application.add_handler(MessageHandler(filters.Sticker.ALL, filter_sticker))
     application.add_handler(MessageHandler(filters.ANIMATION, filter_animation))
 
     # Run the bot
