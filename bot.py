@@ -1,16 +1,14 @@
 import logging
 import os
-
 from dotenv import load_dotenv
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ChatMember, ForceReply
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ChatMember
 from telegram.ext import (
     Application,
     CommandHandler,
-    ContextTypes,
     MessageHandler,
     filters,
+    ContextTypes,
 )
-from telegram.error import BadRequest
 import requests
 from bs4 import BeautifulSoup
 
@@ -24,12 +22,11 @@ CHANNEL_USERNAME = "@esubalewbots"
 
 async def check_user_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     user_id = update.effective_user.id
-
     try:
         chat_member = await context.bot.get_chat_member(chat_id=CHANNEL_USERNAME, user_id=user_id)
         user_status = chat_member.status
         return user_status
-    except BadRequest as e:
+    except Exception as e:
         logger.error(f"Error: {e}")
         return "error"
 
@@ -42,50 +39,7 @@ async def send_join_channel_button(chat_id, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.message.from_user
     userName = user.first_name
-    user_id = user.id
-
-    if user_id == 1742717838:
-        Name = "Azeb M"
-        await update.message.reply_text(f"Hey, {Name}! I admire you very much!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 1648265210:
-        Name = "Esubalew Chekol"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 209435890:
-        Name = "Amarson"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 202048953:
-        Name = "Dan"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 50479002:
-        Name = "Sime"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 1517746484:
-        Name = "Biniam"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    elif user_id == 964042292:
-        Name = "Samson"
-        await update.message.reply_text(f"Hey, {Name}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-    else:
-        await update.message.reply_text(f"Hey, {userName}!")
-        await update.message.reply_text("Send any word, you want meaning for. I will define it.")
-
-async def list_bots(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    keyboard = [
-        [InlineKeyboardButton("TheBELAHbot", url="https://t.me/TheBELAHbot")],
-        [InlineKeyboardButton("AAU_Robot", url="https://t.me/AAU_Robot")],
-        [InlineKeyboardButton("AllFunctionsbot", url="https://t.me/AllFunctionsbot")],
-        [InlineKeyboardButton("ResultsRobot", url="https://t.me/ResultsRobot")],
-        [InlineKeyboardButton("Join @esubalewbots for more", url="https://t.me/esubalewbots")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Other bots:", reply_markup=reply_markup)
+    await update.message.reply_text(f"Hey, {userName}! Send any word, and I will define it.")
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_status = await check_user_status(update, context)
@@ -103,7 +57,7 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     if len(text) > 27:
         await update.message.reply_text(
-            "Sorry! I can't find meanings for words having letters greater than 27\nThe longest word I can define is electroencephalographically[27 letters]"
+            "Sorry! I can't find meanings for words having more than 27 letters."
         )
         return
 
@@ -144,37 +98,31 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logger.error(f"Error: {e}")
         await context.bot.edit_message_text(chat_id=update.message.chat_id, message_id=message.message_id, text='Something went wrong...')
 
-async def filter_photos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Photos/Images!", quote=True)
+# Filter Handlers for Various Content Types
 
-async def filter_files(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Files!", quote=True)
+async def filter_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await search(update, context)
 
-async def filter_videos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Videos!", quote=True)
+async def filter_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent a URL! Here's what I can do with it later.")
 
-async def filter_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Voice messages!", quote=True)
+async def filter_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent a photo!")
+
+async def filter_document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent a document!")
 
 async def filter_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Audio!", quote=True)
+    await update.message.reply_text("You sent an audio file!")
 
-async def filter_stickers(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Stickers!", quote=True)
+async def filter_video(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent a video!")
 
-async def filter_documents(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for Documents!", quote=True)
+async def filter_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent a sticker!")
 
-async def filter_gifs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user = update.message.from_user.first_name
-    await update.message.reply_text(f"Dear {user}, Currently, I don't search for GIFs!", quote=True)
+async def filter_animation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("You sent an animation!")
 
 def main() -> None:
     """Start the bot."""
@@ -182,16 +130,20 @@ def main() -> None:
 
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(os.environ["TOKEN"]).build()
+
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("list", list_bots))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, search))
-    application.add_handler(MessageHandler(filters.PHOTO, filter_photos))
-    application.add_handler(MessageHandler(filters.Document.ALL, filter_documents))
-    application.add_handler(MessageHandler(filters.VIDEO, filter_videos))
-    application.add_handler(MessageHandler(filters.VOICE, filter_voice))
+
+    # Detecting Text (non-command) and URLs
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, filter_text))
+    application.add_handler(MessageHandler(filters.Entity.URL, filter_url))
+
+    # Detecting Media
+    application.add_handler(MessageHandler(filters.PHOTO, filter_photo))
+    application.add_handler(MessageHandler(filters.Document.All, filter_document))
     application.add_handler(MessageHandler(filters.AUDIO, filter_audio))
-    application.add_handler(MessageHandler(filters.STICKER, filter_stickers))
-    application.add_handler(MessageHandler(filters.ANIMATION, filter_gifs))
+    application.add_handler(MessageHandler(filters.VIDEO, filter_video))
+    application.add_handler(MessageHandler(filters.STICKER, filter_sticker))
+    application.add_handler(MessageHandler(filters.ANIMATION, filter_animation))
 
     # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
