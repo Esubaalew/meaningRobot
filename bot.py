@@ -11,6 +11,7 @@ from telegram.ext import (
 )
 import requests
 from bs4 import BeautifulSoup
+from telegram.constants import ChatAction
 
 # Enable logging
 logging.basicConfig(
@@ -70,10 +71,12 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         message = await update.message.reply_text(
             f'I am searching for {text}, Please wait....', quote=True)
+        await context.bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
 
         url = f'https://www.merriam-webster.com/dictionary/{text}'
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/91.0.4472.124 Safari/537.36'
         }
         page = requests.get(url, headers=headers)
         soup = BeautifulSoup(page.text, 'html.parser')
