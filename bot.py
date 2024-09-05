@@ -135,7 +135,7 @@ def main() -> None:
 
     # Detecting Text (non-command) and URLs
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, filter_text))
-    application.add_handler(MessageHandler(filters.Entity.URL, filter_url))
+    application.add_handler(MessageHandler(filters.Entity.url, filter_url))
 
     # Detecting Media
     application.add_handler(MessageHandler(filters.PHOTO, filter_photo))
