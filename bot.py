@@ -69,9 +69,10 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     try:
+        await context.bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         message = await update.message.reply_text(
             f'I am searching for {text}, Please wait....', quote=True)
-        await context.bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+
 
         url = f'https://www.merriam-webster.com/dictionary/{text}'
         headers = {
