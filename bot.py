@@ -184,16 +184,17 @@ def main() -> None:
     application = Application.builder().token(os.environ["TOKEN"]).build()
 
     # Add handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("list", list_bots))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, search))
-    application.add_handler(MessageHandler(filters.PHOTO, filter_photos))
-    #application.add_handler(MessageHandler(filters.DOCUMENT, filter_documents))
-    application.add_handler(MessageHandler(filters.VIDEO, filter_videos))
-    application.add_handler(MessageHandler(filters.VOICE, filter_voice))
-    application.add_handler(MessageHandler(filters.AUDIO, filter_audio))
-    application.add_handler(MessageHandler(filters.STICKER, filter_stickers))
-    application.add_handler(MessageHandler(filters.GIF, filter_gifs))
+    application.add_handler(CommandHandler("start# Add handlers with correct filter names
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("list", list_bots))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, search))
+application.add_handler(MessageHandler(filters.PHOTO, filter_photos))
+application.add_handler(MessageHandler(filters.Document.ALL, filter_documents))
+application.add_handler(MessageHandler(filters.VIDEO, filter_videos))
+application.add_handler(MessageHandler(filters.VOICE, filter_voice))
+application.add_handler(MessageHandler(filters.AUDIO, filter_audio))
+application.add_handler(MessageHandler(filters.STICKER, filter_stickers))
+application.add_handler(MessageHandler(filters.ANIMATION, filter_gifs))
 
     # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
