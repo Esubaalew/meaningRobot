@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 CHANNEL_USERNAME = "@esubalewbots"
 
+
 async def check_user_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     user_id = update.effective_user.id
     try:
@@ -30,16 +31,20 @@ async def check_user_status(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         logger.error(f"Error: {e}")
         return "error"
 
+
 async def send_join_channel_button(chat_id, context: ContextTypes.DEFAULT_TYPE):
     button = InlineKeyboardButton("Join Channel", url="https://t.me/esubalewbots")
     keyboard = [[button]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=chat_id, text="To use this bot, please join our channel:", reply_markup=reply_markup)
+    await context.bot.send_message(chat_id=chat_id, text="To use this bot, please join our channel:",
+                                   reply_markup=reply_markup)
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.message.from_user
     userName = user.first_name
     await update.message.reply_text(f"Hey, {userName}! Send any word, and I will define it.")
+
 
 async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_status = await check_user_status(update, context)
@@ -48,8 +53,9 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("An error occurred. Please try again later.")
         return
 
-    if user_status not in [ChatMember.MEMBER, ChatMember.ADMINISTRATOR, ChatMember.CREATOR]:
-        await update.message.reply_text(f"Please join {CHANNEL_USERNAME} before using the bot.\nYour current status: {user_status}")
+    if user_status not in [ChatMember.MEMBER, ChatMember.ADMINISTRATOR, ChatMember.OWNER]:
+        await update.message.reply_text(
+            f"Please join {CHANNEL_USERNAME} before using the bot.\nYour current status: {user_status}")
         await send_join_channel_button(update.message.chat_id, context)
         return
 
@@ -88,7 +94,7 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         etymology = soup.find('p', {'class': 'et'})
         if etymology:
             await context.bot.send_message(chat_id=update.message.chat_id, text=f'Etymology\n{etymology.text}')
-        
+
         examples = soup.find('div', {'class': 'in-sentences'})
         if examples:
             examples_text = examples.text.strip()
@@ -96,33 +102,43 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     except Exception as e:
         logger.error(f"Error: {e}")
-        await context.bot.edit_message_text(chat_id=update.message.chat_id, message_id=message.message_id, text='Something went wrong...')
+        await context.bot.edit_message_text(chat_id=update.message.chat_id, message_id=message.message_id,
+                                            text='Something went wrong...')
+
 
 # Filter Handlers for Various Content Types
 
 async def filter_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await search(update, context)
 
+
 async def filter_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent a URL! Here's what I can do with it later.")
+
 
 async def filter_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent a photo!")
 
+
 async def filter_document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent a document!")
+
 
 async def filter_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent an audio file!")
 
+
 async def filter_video(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent a video!")
+
 
 async def filter_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent a sticker!")
 
+
 async def filter_animation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("You sent an animation!")
+
 
 def main() -> None:
     """Start the bot."""
@@ -151,6 +167,7 @@ def main() -> None:
 
     # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
+
 
 if __name__ == "__main__":
     main()
